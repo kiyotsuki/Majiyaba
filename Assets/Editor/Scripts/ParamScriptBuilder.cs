@@ -56,43 +56,61 @@ namespace Majiyaba
 			if (valueDefines.Count != 0)
 			{
 				// パラメータ定義
+				WriteBlock($"public class Data");
+				var constructorText = "";
+				foreach (var def in valueDefines)
+				{
+					if (constructorText != "")
+					{
+						constructorText += ", ";
+					}
+					constructorText += def.GenerateConstructorDefine();
+				}
+				WriteBlock($"public Data({constructorText})");
+				foreach (var def in valueDefines)
+				{
+					WriteLine(def.GenerateSetValueDefine());
+				}
+				WriteBlockEnd(true);
 				foreach (var def in valueDefines)
 				{
 					WriteLine(def.GeneratePropatyDefine());
 				}
-				WriteLine();
+				WriteBlockEnd(true);
 
+				
 				// データ取得関数作成
-				WriteBlock($"public static {scriptName} GetData(int id)");
-				WriteLine("if(id < 0) return null;");
-				for (int i = 0; i < dataSources.Count; i++)
+				WriteLine("private static readonly Data[] data = {");
+				foreach (var source in dataSources)
 				{
-					var source = dataSources[i];
-					if (IsEmpty(source))
-					{
-						//	すべて空白の行は無視する
-						continue;
-					}
-
 					var setValueDefines = "";
 					foreach (var def in valueDefines)
 					{
-						var sourceValue = source[def.GetIndex()];
-						if (sourceValue == "")
+						if(setValueDefines != "")
 						{
-							continue;
+							setValueDefines += ", ";
 						}
-						setValueDefines += def.GenerateSetValueDefine(sourceValue);
+						setValueDefines += def.ConvertValue(source[def.GetIndex()]);
 					}
-					WriteLine($"if(id == { i }) return new {scriptName}(){{ {setValueDefines}}};");
+					WriteLine($"new Data({setValueDefines}),");
 				}
-				WriteLine("return null;");
+				WriteLine("};");
+				WriteLine();
+
+				// データ取得関数
+				// IDでもアクセスできるように用意
+				WriteBlock("public static Data GetData(ID id)");
+				WriteLine("return GetData((int)id);");
 				WriteBlockEnd(true);
 
+				WriteBlock("public static Data GetData(int id)");
+				WriteLine("if( id < 0 || data.Length <= id ) return null;");
+				WriteLine("return data[id];");
+				WriteBlockEnd(true);
 
-				// IDでもアクセスできるようにしておく
-				WriteBlock($"public static {scriptName} GetData(ID id)");
-				WriteLine("return GetData((int)id);");
+				// データ数取得関数
+				WriteBlock("public static int GetCount()");
+				WriteLine("return data.Length;");
 				WriteBlockEnd();
 			}
 
@@ -100,24 +118,6 @@ namespace Majiyaba
 			WriteBlockEnd();
 
 			return builder.ToString();
-		}
-
-		/// <summary>
-		///	指定した列がすべて空白か判定
-		///	エクセルの無効列を判定
-		/// </summary>
-		/// <param name="sources"></param>
-		/// <returns></returns>
-		private bool IsEmpty(string[] sources)
-		{
-			foreach (var source in sources)
-			{
-				if (source != "")
-				{
-					return false;
-				}
-			}
-			return true;
 		}
 		
 		/// <summary>

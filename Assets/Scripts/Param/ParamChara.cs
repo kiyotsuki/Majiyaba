@@ -16,21 +16,38 @@ namespace Majiyaba
 			Hamach = 2,
 		}
 		
-		public string PrefabName { get; protected set; } = null;
-		public ParamCharaType.ID Type { get; protected set; } = ParamCharaType.ID.Invalid;
-		
-		public static ParamChara GetData(int id)
+		public class Data
 		{
-			if(id < 0) return null;
-			if(id == 0) return new ParamChara(){ PrefabName = "player_test", Type = ParamCharaType.ID.Object, };
-			if(id == 1) return new ParamChara(){ PrefabName = "player", Type = ParamCharaType.ID.Human, };
-			if(id == 2) return new ParamChara(){ PrefabName = "hamach", Type = ParamCharaType.ID.Fish, };
-			return null;
+			public Data(string PrefabName, ParamCharaType.ID Type)
+			{
+				this.PrefabName = PrefabName;
+				this.Type = Type;
+			}
+			
+			public string PrefabName { get; }
+			public ParamCharaType.ID Type { get; }
 		}
 		
-		public static ParamChara GetData(ID id)
+		private static readonly Data[] data = {
+		new Data("player_test", ParamCharaType.ID.Object),
+		new Data("player", ParamCharaType.ID.Human),
+		new Data("hamach", ParamCharaType.ID.Fish),
+		};
+		
+		public static Data GetData(ID id)
 		{
 			return GetData((int)id);
+		}
+		
+		public static Data GetData(int id)
+		{
+			if( id < 0 || data.Length <= id ) return null;
+			return data[id];
+		}
+		
+		public static int GetCount()
+		{
+			return data.Length;
 		}
 	}
 }

@@ -23,14 +23,19 @@ namespace Majiyaba
 			return index;
 		}
 
-		public string GeneratePropatyDefine()
+		public string GenerateConstructorDefine()
 		{
-			return $"public { type } { name } {{ get; protected set; }} = { init };";
+			return $"{ type } { name }";
 		}
 
-		public string GenerateSetValueDefine(string sourceValue)
+		public string GenerateSetValueDefine()
 		{
-			return $"{ name } = { ConvertValue(sourceValue) }, ";
+			return $"this.{ name } = { name };";
+		}
+
+		public string GeneratePropatyDefine()
+		{
+			return $"public { type } { name } {{ get; }}";
 		}
 
 		private string ConvertType(string type)
@@ -53,7 +58,7 @@ namespace Majiyaba
 		{
 			if (value == "")
 			{
-				return null;
+				return init;
 			}
 
 			switch (type)
