@@ -20,12 +20,12 @@ namespace Majiyaba
 			var canvasPref = req.asset as GameObject;
 
 			// インスタンス化と登録
-			_debugCanvas = GameObject.Instantiate(canvasPref);
-			var canvasTrans = _debugCanvas.transform;
+			debugCanvas = GameObject.Instantiate(canvasPref);
+			var canvasTrans = debugCanvas.transform;
 			canvasTrans.SetParent(gameObject.transform);
 
 			// デバッグメニュー取得
-			_debugMenu = _debugCanvas.GetComponent<DebugMenu>();
+			debugMenu = debugCanvas.GetComponent<DebugMenu>();
 			
 			Ready = true;
 			yield break;
@@ -37,10 +37,10 @@ namespace Majiyaba
 		/// <returns></returns>
 		public DebugMenu GetMenu()
 		{
-			return _debugMenu;
+			return debugMenu;
 		}
 		
-		private GameObject _debugCanvas = null;
-		private DebugMenu _debugMenu = null;
+		private GameObject debugCanvas = null;
+		private DebugMenu debugMenu = null;
 	}
 }

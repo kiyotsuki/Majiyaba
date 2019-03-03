@@ -26,10 +26,6 @@ namespace Majiyaba
 			
 		}
 
-		public bool Ready
-		{
-			get;
-			set;
-		}
+		public bool Ready { get; protected set; }
 	}
 }

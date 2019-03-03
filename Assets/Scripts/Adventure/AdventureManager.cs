@@ -17,40 +17,40 @@ namespace Majiyaba
 		{
 			Ready = false;
 
-			var adventureObjects = GameObject.FindObjectsOfType<AdventureObject>();
-			foreach(var obj in adventureObjects)
+			var objects = GameObject.FindObjectsOfType<AdventureObject>();
+			foreach(var obj in objects)
 			{
 				int key = obj.GetKey();
-				if (_adventureObjects.ContainsKey(key))
+				if (adventureObjects.ContainsKey(key))
 				{
-					Debug.LogAssertion("同じ名前のオブジェクトを登録しようとしました " + obj.GetName() + " : " + _adventureObjects[key].GetName());
+					Debug.LogAssertion("同じ名前のオブジェクトを登録しようとしました " + obj.GetName() + " : " + adventureObjects[key].GetName());
 					continue;
 				}
-				_adventureObjects.Add(key, obj);
+				adventureObjects.Add(key, obj);
 			}
 
-			if (_playerActor == null)
+			if (playerActor == null)
 			{
 				var actorManager = GameUtil.GetManager<ActorManager>();
 				actorManager.CreateActor("player", setupPlayer);
 			}
 			else
 			{
-				setupPlayer(_playerActor);
+				setupPlayer(playerActor);
 			}
 			yield break;
 		}
 
 		private void setupPlayer(GameObject player)
 		{
-			_playerActor = player;
-			_playerActor.SetActive(true);
+			playerActor = player;
+			playerActor.SetActive(true);
 
-			var entryPoint = GetAdventureObject("player_entry");
+			var entryPoint = GetAdventureObject("playerentry");
 			if (entryPoint != null)
 			{
-				_playerActor.transform.position = entryPoint.transform.position;
-				_playerActor.transform.rotation = entryPoint.transform.rotation;
+				playerActor.transform.position = entryPoint.transform.position;
+				playerActor.transform.rotation = entryPoint.transform.rotation;
 			}
 
 			Ready = true;
@@ -59,7 +59,7 @@ namespace Majiyaba
 
 		public override void OnUpdateScene()
 		{
-			if(_playerActor == null)
+			if(playerActor == null)
 			{
 				return;
 			}
@@ -73,12 +73,12 @@ namespace Majiyaba
 				RaycastHit hit;
 				if (Physics.Raycast(ray, out hit, 100f, 1 << 9))
 				{
-					var move = _playerActor.GetComponent<ActorMove>();
+					var move = playerActor.GetComponent<ActorMove>();
 					move.ReqestMove(hit.point);
 				}
 			}
 
-			var pos = _playerActor.transform.position;
+			var pos = playerActor.transform.position;
 			pos += Camera.main.transform.forward * -2;
 			pos.y += 0.5f;
 			Camera.main.transform.position = pos;
@@ -87,26 +87,26 @@ namespace Majiyaba
 
 		public override void OnTerminateScene()
 		{
-			_adventureObjects.Clear();
-			if (_playerActor != null)
+			adventureObjects.Clear();
+			if (playerActor != null)
 			{
-				_playerActor.SetActive(false);
+				playerActor.SetActive(false);
 			}
 		}
 		
 		public GameObject GetAdventureObject(string name)
 		{
 			var key = name.GetHashCode();
-			if (_adventureObjects.ContainsKey(key) == false)
+			if (adventureObjects.ContainsKey(key) == false)
 			{
 				Debug.LogAssertion("未登録のオブジェクトを取得しようとしました " + name);
 				return null;
 			}
-			return _adventureObjects[key].gameObject;
+			return adventureObjects[key].gameObject;
 		}
 
-		private GameObject _playerActor = null;
+		private GameObject playerActor = null;
 
-		private Dictionary<int, AdventureObject> _adventureObjects = new Dictionary<int, AdventureObject>();
+		private Dictionary<int, AdventureObject> adventureObjects = new Dictionary<int, AdventureObject>();
 	}
 }

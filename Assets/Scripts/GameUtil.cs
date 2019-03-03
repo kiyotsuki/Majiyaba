@@ -13,7 +13,7 @@ namespace Majiyaba
 		/// <returns></returns>
 		public static T GetManager<T>() where T : ManagerBase
 		{
-			var main = GameMain.GetInstance();
+			var main = GameMain.Instance;
 			if (main == null) return null;
 
 			return main.GetManager<T>();
@@ -26,7 +26,7 @@ namespace Majiyaba
 		/// <returns></returns>
 		public static bool RequestChangeScene(string sceneName)
 		{
-			var main = GameMain.GetInstance();
+			var main = GameMain.Instance;
 			if (main == null) return false;
 
 			return main.RequestChangeScene(sceneName);

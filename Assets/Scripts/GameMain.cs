@@ -8,7 +8,7 @@ namespace Majiyaba
 	public class GameMain : MonoBehaviour
 	{
 		// インスタンス
-		private static GameMain _instance;
+		public static GameMain Instance { get; protected set; }
 
 		/// <summary>
 		/// アプリケーションの開始
@@ -21,19 +21,8 @@ namespace Majiyaba
 			DontDestroyOnLoad(obj);
 
 			// インスタンスを登録
-			_instance = obj.AddComponent<GameMain>();
+			Instance = obj.AddComponent<GameMain>();
 		}
-
-		/// <summary>
-		/// インスタンス取得
-		/// </summary>
-		/// <returns></returns>
-		public static GameMain GetInstance()
-		{
-			return _instance;
-		}
-
-
 
 		/// <summary>
 		///	各マネージャの取得
@@ -42,7 +31,7 @@ namespace Majiyaba
 		/// <returns></returns>
 		public T GetManager<T>() where T : ManagerBase
 		{
-			foreach (var manager in _managerList)
+			foreach (var manager in managerList)
 			{
 				if (manager is T)
 				{
@@ -68,24 +57,24 @@ namespace Majiyaba
 		/// <returns></returns>
 		private IEnumerator initializeGame()
 		{
-			_fadeManager = createManager<FadeManager>();
+			fadeManager = CreateManager<FadeManager>();
 			
 			yield return new WaitUntil(() =>
 			{
-				if(_fadeManager.Ready == false)
+				if(fadeManager.Ready == false)
 				{
 					return false;
 				}
 				return true;
 			});
 
-			createManager<ActorManager>();
-			createManager<AdventureManager>();
-			createManager<DebugManager>();
+			CreateManager<ActorManager>();
+			CreateManager<AdventureManager>();
+			CreateManager<DebugManager>();
 
 			yield return new WaitUntil(() =>
 			{
-				foreach (var manager in _managerList)
+				foreach (var manager in managerList)
 				{
 					if(manager.Ready == false)
 					{
@@ -95,22 +84,22 @@ namespace Majiyaba
 				return true;
 			});
 
-			_activeScene = SceneManager.GetActiveScene();
-			if(_activeScene.name == "_main")
+			activeScene = SceneManager.GetActiveScene();
+			if(activeScene.name == "_main")
 			{
 				// タイトルへ遷移
 				RequestChangeScene("title");
 			}
 			else
 			{
-				foreach (var manager in _managerList)
+				foreach (var manager in managerList)
 				{
 					StartCoroutine(manager.OnBeginScene());
 				}
-				_sceneState = SceneState.Init;
+				sceneState = SceneState.Init;
 			}
 			
-			_initialized = true;
+			initialized = true;
 			yield break;
 		}
 
@@ -119,12 +108,12 @@ namespace Majiyaba
 		///	初期化を開始する
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		private T createManager<T>() where T : ManagerBase
+		private T CreateManager<T>() where T : ManagerBase
 		{
 			var obj = new GameObject(typeof(T).Name);
 			obj.transform.SetParent(gameObject.transform);
 			var manager = obj.AddComponent<T>();
-			_managerList.Add(manager);
+			managerList.Add(manager);
 
 			StartCoroutine(manager.OnInitialize());
 			return manager;
@@ -134,43 +123,43 @@ namespace Majiyaba
 		// Update is called once per frame
 		void Update()
 		{
-			if(_initialized == false)
+			if(initialized == false)
 			{
 				// 初期化が終わるまで待機
 				return;
 			}
 
-			switch (_sceneState)
+			switch (sceneState)
 			{
 				case SceneState.Request:
 					{
 						// フェードアウトするまで待つ
-						if (_fadeManager.IsCoverd())
+						if (fadeManager.IsCoverd())
 						{
-							foreach (var manager in _managerList)
+							foreach (var manager in managerList)
 							{
 								manager.OnTerminateScene();
 							}
 
-							_sceneLoadOperation = SceneManager.LoadSceneAsync(_nextSceneName);
-							_sceneState = SceneState.Load;
+							sceneLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
+							sceneState = SceneState.Load;
 						}
 					}
 					break;
 
 				case SceneState.Load:
 					{
-						if(_sceneLoadOperation.isDone)
+						if(sceneLoadOperation.isDone)
 						{
-							_activeScene = SceneManager.GetActiveScene();
-							_nextSceneName = null;
-							_sceneLoadOperation = null;
+							activeScene = SceneManager.GetActiveScene();
+							nextSceneName = null;
+							sceneLoadOperation = null;
 							
-							foreach (var manager in _managerList)
+							foreach (var manager in managerList)
 							{
 								StartCoroutine(manager.OnBeginScene());
 							}
-							_sceneState = SceneState.Init;
+							sceneState = SceneState.Init;
 						}
 					}
 					break;
@@ -178,7 +167,7 @@ namespace Majiyaba
 				case SceneState.Init:
 					{
 						bool allReady = true;
-						foreach (var manager in _managerList)
+						foreach (var manager in managerList)
 						{
 							if(manager.Ready == false)
 							{
@@ -188,15 +177,15 @@ namespace Majiyaba
 						}
 						if (allReady)
 						{
-							_fadeManager.RequestFadeIn(FadeManager.FadeFlag.Scene);
-							_sceneState = SceneState.None;
+							fadeManager.RequestFadeIn(FadeManager.FadeFlag.Scene);
+							sceneState = SceneState.None;
 						}
 					}
 					break;
 
 				case SceneState.None:
 					{
-						foreach (var manager in _managerList)
+						foreach (var manager in managerList)
 						{
 							manager.OnUpdateScene();
 						}
@@ -212,16 +201,16 @@ namespace Majiyaba
 		/// <param name="sceneName"></param>
 		public bool RequestChangeScene(string sceneName)
 		{
-			if(_sceneState != SceneState.None)
+			if(sceneState != SceneState.None)
 			{
 				Debug.LogAssertion("シーン遷移中に別のシーンへ遷移しようとしました " + sceneName);
 				return false;
 			}
-			_nextSceneName = sceneName;
-			_sceneState = SceneState.Request;
+			nextSceneName = sceneName;
+			sceneState = SceneState.Request;
 
 			// フェード開始
-			_fadeManager.RequestFadeOut(FadeManager.FadeFlag.Scene);
+			fadeManager.RequestFadeOut(FadeManager.FadeFlag.Scene);
 			return false;
 		}
 
@@ -232,15 +221,15 @@ namespace Majiyaba
 			Load,
 			Init,
 		}
-		private SceneState _sceneState = SceneState.None;
-		private string _nextSceneName = null;
-		private AsyncOperation _sceneLoadOperation = null;
+		private SceneState sceneState = SceneState.None;
+		private string nextSceneName = null;
+		private AsyncOperation sceneLoadOperation = null;
 
-		private Scene _activeScene = new Scene();
+		private Scene activeScene = new Scene();
 
-		private bool _initialized = false;
-		private List<ManagerBase> _managerList = new List<ManagerBase>();
+		private bool initialized = false;
+		private List<ManagerBase> managerList = new List<ManagerBase>();
 
-		private FadeManager _fadeManager = null;
+		private FadeManager fadeManager = null;
 	}
 }

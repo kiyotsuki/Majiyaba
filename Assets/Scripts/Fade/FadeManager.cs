@@ -16,11 +16,11 @@ namespace Majiyaba
 				return req.isDone;
 			});
 			var canvasPref = req.asset as GameObject;
-			_fadeCanvas = GameObject.Instantiate(canvasPref);
+			fadeCanvas = GameObject.Instantiate(canvasPref);
 
-			_fadeCanvas.transform.SetParent(gameObject.transform);
-			_fadeImage = _fadeCanvas.GetComponentInChildren<Image>();
-			_raycaster = _fadeCanvas.GetComponentInChildren<GraphicRaycaster>();
+			fadeCanvas.transform.SetParent(gameObject.transform);
+			fadeImage = fadeCanvas.GetComponentInChildren<Image>();
+			raycaster = fadeCanvas.GetComponentInChildren<GraphicRaycaster>();
 
 			ForceFadeOut();
 			Ready = true;
@@ -29,41 +29,41 @@ namespace Majiyaba
 
 		public void Update()
 		{
-			if(_fadeCanvas == null)
+			if(fadeCanvas == null)
 			{
 				return;
 			}
 
-			switch (_fadeState)
+			switch (fadeState)
 			{
 				case FadeState.FadeIn:
 				case FadeState.FadeOut:
 					{
-						_timeCounter += Time.deltaTime;
-						float rate = Mathf.Min(1, (_timeCounter / _fadeTime));
+						timeCounter += Time.deltaTime;
+						float rate = Mathf.Min(1, (timeCounter / fadeTime));
 
-						if (_fadeState == FadeState.FadeOut)
+						if (fadeState == FadeState.FadeOut)
 						{
-							_color.a = rate;
+							color.a = rate;
 						}
 						else
 						{
-							_color.a = 1.0f - rate;
+							color.a = 1.0f - rate;
 						}
 
-						_fadeImage.color = _color;
+						fadeImage.color = color;
 						if (rate == 1)
 						{
-							if (_fadeState == FadeState.FadeOut)
+							if (fadeState == FadeState.FadeOut)
 							{
-								_fadeState = FadeState.Coverd;
+								fadeState = FadeState.Coverd;
 							}
 							else
 							{
-								_fadeState = FadeState.None;
+								fadeState = FadeState.None;
 
 								// レイキャストを無効化
-								_raycaster.enabled = false;
+								raycaster.enabled = false;
 							}
 						}
 					}
@@ -77,14 +77,14 @@ namespace Majiyaba
 		/// </summary>
 		public void ForceFadeOut()
 		{
-			Debug.Log("強制フェードアウト " + _fadeFlags.ToString());
+			Debug.Log("強制フェードアウト " + fadeFlags.ToString());
 
-			_fadeImage.color = new Color(0, 0, 0, 1);
+			fadeImage.color = new Color(0, 0, 0, 1);
 
 			// レイキャスト遮断開始
-			_raycaster.enabled = true;
+			raycaster.enabled = true;
 
-			_fadeState = FadeState.Coverd;
+			fadeState = FadeState.Coverd;
 		}
 
 
@@ -96,18 +96,18 @@ namespace Majiyaba
 		/// <param name="time"></param>
 		public void RequestFadeOut(FadeFlag flag, float time = 0.3f)
 		{
-			_fadeFlags |= flag;
-			Debug.Log("フェードアウト " + flag.ToString() + " : " + _fadeFlags.ToString());
+			fadeFlags |= flag;
+			Debug.Log("フェードアウト " + flag.ToString() + " : " + fadeFlags.ToString());
 
-			if (_fadeState == FadeState.FadeOut)
+			if (fadeState == FadeState.FadeOut)
 			{
 				return;
 			}
-			if(_fadeState == FadeState.Coverd)
+			if(fadeState == FadeState.Coverd)
 			{
 				return;
 			}
-			startFade(FadeState.FadeOut, time);
+			StartFade(FadeState.FadeOut, time);
 		}
 
 		/// <summary>
@@ -118,17 +118,17 @@ namespace Majiyaba
 		/// <param name="time"></param>
 		public void RequestFadeIn(FadeFlag flag, float time = 0.3f)
 		{
-			_fadeFlags &= ~flag;
-			Debug.Log("フェードイン " + flag.ToString() + " : " + _fadeFlags.ToString());
-			if (_fadeFlags != FadeFlag.None)
+			fadeFlags &= ~flag;
+			Debug.Log("フェードイン " + flag.ToString() + " : " + fadeFlags.ToString());
+			if (fadeFlags != FadeFlag.None)
 			{
 				return;
 			}
-			if(_fadeState == FadeState.None)
+			if(fadeState == FadeState.None)
 			{
 				return;
 			}
-			startFade(FadeState.FadeIn, time);
+			StartFade(FadeState.FadeIn, time);
 		}
 
 		/// <summary>
@@ -136,32 +136,32 @@ namespace Majiyaba
 		/// </summary>
 		/// <param name="state"></param>
 		/// <param name="time"></param>
-		private void startFade(FadeState state, float time)
+		private void StartFade(FadeState state, float time)
 		{
 			if (state == FadeState.FadeOut)
 			{
-				_color = new Color(0, 0, 0, 1);
+				color = new Color(0, 0, 0, 1);
 			}
 			else
 			{
-				_color = new Color(0, 0, 0, 0);
+				color = new Color(0, 0, 0, 0);
 			}
-			_fadeTime = time;
-			_timeCounter = 0;
-			_fadeState = state;
+			fadeTime = time;
+			timeCounter = 0;
+			fadeState = state;
 
 			// レイキャスト遮断開始
-			_raycaster.enabled = true;
+			raycaster.enabled = true;
 		}
 
 		public bool IsCoverd()
 		{
-			return _fadeState == FadeState.Coverd;
+			return fadeState == FadeState.Coverd;
 		}
 
 		public bool IsNone()
 		{
-			return _fadeState == FadeState.None;
+			return fadeState == FadeState.None;
 		}
 
 		private enum FadeState
@@ -171,10 +171,10 @@ namespace Majiyaba
 			FadeOut,
 			Coverd,
 		}
-		private FadeState _fadeState = FadeState.None;
-		private Color _color;
-		private float _fadeTime = 0;
-		private float _timeCounter = 0;
+		private FadeState fadeState = FadeState.None;
+		private Color color;
+		private float fadeTime = 0;
+		private float timeCounter = 0;
 
 		[System.Flags]
 		public enum FadeFlag
@@ -184,10 +184,10 @@ namespace Majiyaba
 			Scene	= 2,
 			Event	= 4,
 		}
-		private FadeFlag _fadeFlags = FadeFlag.None;
+		private FadeFlag fadeFlags = FadeFlag.None;
 		
-		private GameObject _fadeCanvas = null;
-		private GraphicRaycaster _raycaster = null;
-		private Image _fadeImage = null;
+		private GameObject fadeCanvas = null;
+		private GraphicRaycaster raycaster = null;
+		private Image fadeImage = null;
 	}
 }

@@ -12,18 +12,18 @@ namespace Majiyaba
 		public void Start()
 		{
 			// 初期は非表示
-			_itemSource.SetActive(false);
-			_menuPage.SetActive(false);
+			itemSource.SetActive(false);
+			menuPage.SetActive(false);
 
 			// オープンボタンにコールバック登録
-			_openButton.GetComponent<Button>().onClick.AddListener(Open);
+			openButton.GetComponent<Button>().onClick.AddListener(Open);
 
 			// クローズボタンにコールバック登録
-			_closeButton.GetComponent<Button>().onClick.AddListener(Close);
+			closeButton.GetComponent<Button>().onClick.AddListener(Close);
 
 			// 各ページ登録
-			_pageList.Add(Page.Top, new DebugPageTop());
-			_pageList.Add(Page.Scene, new DebugPageScene());
+			pageList.Add(Page.Top, new DebugPageTop());
+			pageList.Add(Page.Scene, new DebugPageScene());
 		}
 
 		/// <summary>
@@ -31,8 +31,8 @@ namespace Majiyaba
 		/// </summary>
 		public void Open()
 		{
-			_menuPage.SetActive(true);
-			setupPage(_currentPage);
+			menuPage.SetActive(true);
+			SetupPage(currentPage);
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace Majiyaba
 		/// </summary>
 		public void Close()
 		{
-			_menuPage.SetActive(false);
+			menuPage.SetActive(false);
 		}
 
 		/// <summary>
@@ -48,9 +48,9 @@ namespace Majiyaba
 		/// </summary>
 		public void AddButton(string label, UnityAction onClick)
 		{
-			var buttonObj = GameObject.Instantiate(_itemSource);
+			var buttonObj = GameObject.Instantiate(itemSource);
 			buttonObj.SetActive(true);
-			buttonObj.transform.SetParent(_menuPage.transform);
+			buttonObj.transform.SetParent(menuPage.transform);
 
 			var text = buttonObj.GetComponentInChildren<Text>();
 			text.text = label;
@@ -58,7 +58,7 @@ namespace Majiyaba
 			var button = buttonObj.GetComponent<Button>();
 			button.onClick.AddListener(onClick);
 
-			_buttonList.Add(buttonObj);
+			buttonList.Add(buttonObj);
 		}
 
 		/// <summary>
@@ -67,8 +67,8 @@ namespace Majiyaba
 		/// <param name="page"></param>
 		public void ToPage(Page page)
 		{
-			_pageHistory.Add(_currentPage);
-			setupPage(page);
+			pageHistory.Add(currentPage);
+			SetupPage(page);
 		}
 
 		/// <summary>
@@ -76,16 +76,16 @@ namespace Majiyaba
 		/// </summary>
 		public void BackPage()
 		{
-			if(_pageHistory.Count <= 0)
+			if(pageHistory.Count <= 0)
 			{
 				Close();
 				return;
 			}
-			var index = _pageHistory.Count - 1;
-			var page = _pageHistory[index];
-			_pageHistory.RemoveAt(index);
+			var index = pageHistory.Count - 1;
+			var page = pageHistory[index];
+			pageHistory.RemoveAt(index);
 
-			setupPage(page);
+			SetupPage(page);
 		}
 
 		/// <summary>
@@ -93,19 +93,19 @@ namespace Majiyaba
 		/// 戻るボタンは最後に自動配置
 		/// </summary>
 		/// <param name="page"></param>
-		private void setupPage(Page page)
+		private void SetupPage(Page page)
 		{
-			_currentPage = page;
+			currentPage = page;
 
-			foreach (var button in _buttonList)
+			foreach (var button in buttonList)
 			{
 				GameObject.Destroy(button);
 			}
-			_buttonList.Clear();
+			buttonList.Clear();
 
-			if(_pageList.ContainsKey(page))
+			if(pageList.ContainsKey(page))
 			{
-				var pageGenerator = _pageList[page];
+				var pageGenerator = pageList[page];
 				pageGenerator.Setup(this);
 			}
 			AddButton("戻る", () => BackPage());
@@ -129,21 +129,21 @@ namespace Majiyaba
 			Quest,
 			Scenario,
 		}
-		private Page _currentPage = Page.Top;
-		private Dictionary<Page, PageBase> _pageList = new Dictionary<Page, PageBase>();
-		private List<Page> _pageHistory = new List<Page>();
-		private List<GameObject> _buttonList = new List<GameObject>();
+		private Page currentPage = Page.Top;
+		private Dictionary<Page, PageBase> pageList = new Dictionary<Page, PageBase>();
+		private List<Page> pageHistory = new List<Page>();
+		private List<GameObject> buttonList = new List<GameObject>();
 
 		[SerializeField]
-		private GameObject _menuPage = null;
+		private GameObject menuPage = null;
 
 		[SerializeField]
-		private GameObject _openButton = null;
+		private GameObject openButton = null;
 
 		[SerializeField]
-		private GameObject _closeButton = null;
+		private GameObject closeButton = null;
 
 		[SerializeField]
-		private GameObject _itemSource = null;
+		private GameObject itemSource = null;
 	}
 }

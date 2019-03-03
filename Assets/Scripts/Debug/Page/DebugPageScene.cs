@@ -14,18 +14,18 @@ namespace Majiyaba
 		/// </summary>
 		public override void Setup(DebugMenu menu)
 		{
-			_menu = menu;
+			this.menu = menu;
 			
-			menu.AddButton("タイトル", () => changeScene("title"));
-			menu.AddButton("ステージ01", () => changeScene("stage01"));
+			menu.AddButton("タイトル", () => ChangeScene("title"));
+			menu.AddButton("ステージ01", () => ChangeScene("stage01"));
 		}
 
-		private void changeScene(string sceneName)
+		private void ChangeScene(string sceneName)
 		{
 			GameUtil.RequestChangeScene(sceneName);
-			_menu.Close();
+			menu.Close();
 		}
 
-		private DebugMenu _menu = null;
+		private DebugMenu menu = null;
 	}
 }

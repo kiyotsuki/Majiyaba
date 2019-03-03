@@ -1,0 +1,8 @@
+変数名,PrefabName,Type
+説明,プレハブ名,キャラ種別
+型,string,CharaType
+初期値,null,Invalid
+#,,
+PlayerTest,player_test,Object
+Player,player,Human
+Hamach,hamach,Fish

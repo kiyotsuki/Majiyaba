@@ -17,7 +17,7 @@ namespace Majiyaba
 		public void Update()
 		{
 			bool allGererated = true;
-			foreach(var generator in _generatorList)
+			foreach(var generator in generatorList)
 			{
 				var generated = generator.Update(this);
 
@@ -34,46 +34,46 @@ namespace Majiyaba
 		{
 			var req = Resources.LoadAsync<GameObject>("Actor/" + name);
 			var generator = new ActorGenerator(req, callback);
-			_generatorList.Add(generator);
+			generatorList.Add(generator);
 		}
 
 		class ActorGenerator
 		{
 			public ActorGenerator(ResourceRequest request, System.Action<GameObject> callback = null)
 			{
-				_request = request;
-				_callback = callback;
+				this.request = request;
+				this.callback = callback;
 			}
 
 			public bool Update(ActorManager manager)
 			{
-				if(_actor != null)
+				if(actor != null)
 				{
 					return true;
 				}
 
-				if(_request.isDone)
+				if(request.isDone)
 				{
-					var pref = _request.asset as GameObject;
-					_actor = GameObject.Instantiate(pref);
-					_actor.SetActive(false);
+					var pref = request.asset as GameObject;
+					actor = GameObject.Instantiate(pref);
+					actor.SetActive(false);
 
-					_actor.AddComponent<ActorMove>();
+					actor.AddComponent<ActorMove>();
 					
-					_actor.transform.SetParent(manager.gameObject.transform);
-					if(_callback != null)
+					actor.transform.SetParent(manager.gameObject.transform);
+					if(callback != null)
 					{
-						_callback(_actor);
+						callback(actor);
 					}
 				}
 				return false;
 			}
 
-			private ResourceRequest _request = null;
-			private System.Action<GameObject> _callback = null;
-			private GameObject _actor = null;
+			private ResourceRequest request = null;
+			private System.Action<GameObject> callback = null;
+			private GameObject actor = null;
 		}
 
-		private List<ActorGenerator> _generatorList = new List<ActorGenerator>();
+		private List<ActorGenerator> generatorList = new List<ActorGenerator>();
 	}
 }

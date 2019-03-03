@@ -1,0 +1,7 @@
+変数名,SceneName,Playable,Scale,Player
+説明,シーン名,操作可能,拡大率,プレイヤー
+型,string,bool,float,Chara
+初期値,null,FALSE,1,Invalid
+#,,,,
+Title,title,,,
+Stage01,stage01,,,Hamach
