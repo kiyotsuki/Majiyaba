@@ -28,21 +28,22 @@ namespace Majiyaba
 			public ParamCharaType.ID Type { get; }
 		}
 		
-		private static readonly Data[] data = {
-		new Data("player_test", ParamCharaType.ID.Object),
-		new Data("player", ParamCharaType.ID.Human),
-		new Data("hamach", ParamCharaType.ID.Fish),
-		};
-		
-		public static Data GetData(ID id)
+		private static readonly Data[] data = 
 		{
-			return GetData((int)id);
-		}
+			new Data("player_test", ParamCharaType.ID.Object),
+			new Data("player", ParamCharaType.ID.Human),
+			new Data("hamach", ParamCharaType.ID.Fish),
+		};
 		
 		public static Data GetData(int id)
 		{
 			if( id < 0 || data.Length <= id ) return null;
 			return data[id];
+		}
+		
+		public static Data GetData(ID id)
+		{
+			return GetData((int)id);
 		}
 		
 		public static int GetCount()

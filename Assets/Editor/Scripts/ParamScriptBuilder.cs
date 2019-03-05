@@ -50,63 +50,33 @@ namespace Majiyaba
 				}
 				WriteLine($"{id} = {i},");
 			}
-			WriteBlockEnd(true);
+			WriteBlockEnd();
 
 			// Value定義がある場合はパラメータとGetData定義作成
 			if (valueDefines.Count != 0)
 			{
-				// パラメータ定義
-				WriteBlock($"public class Data");
-				var constructorText = "";
-				foreach (var def in valueDefines)
-				{
-					if (constructorText != "")
-					{
-						constructorText += ", ";
-					}
-					constructorText += def.GenerateConstructorDefine();
-				}
-				WriteBlock($"public Data({constructorText})");
-				foreach (var def in valueDefines)
-				{
-					WriteLine(def.GenerateSetValueDefine());
-				}
-				WriteBlockEnd(true);
-				foreach (var def in valueDefines)
-				{
-					WriteLine(def.GeneratePropatyDefine());
-				}
-				WriteBlockEnd(true);
+				WriteLine();
 
-				
-				// データ取得関数作成
-				WriteLine("private static readonly Data[] data = {");
-				foreach (var source in dataSources)
-				{
-					var setValueDefines = "";
-					foreach (var def in valueDefines)
-					{
-						if(setValueDefines != "")
-						{
-							setValueDefines += ", ";
-						}
-						setValueDefines += def.ConvertValue(source[def.GetIndex()]);
-					}
-					WriteLine($"new Data({setValueDefines}),");
-				}
-				WriteLine("};");
+				// データクラス定義
+				WriteDataClassDefine();
+				WriteLine();
+
+				// データ配列
+				WriteDataArray();
 				WriteLine();
 
 				// データ取得関数
-				// IDでもアクセスできるように用意
-				WriteBlock("public static Data GetData(ID id)");
-				WriteLine("return GetData((int)id);");
-				WriteBlockEnd(true);
-
 				WriteBlock("public static Data GetData(int id)");
 				WriteLine("if( id < 0 || data.Length <= id ) return null;");
 				WriteLine("return data[id];");
-				WriteBlockEnd(true);
+				WriteBlockEnd();
+				WriteLine();
+
+				// IDでもアクセスできる版
+				WriteBlock("public static Data GetData(ID id)");
+				WriteLine("return GetData((int)id);");
+				WriteBlockEnd();
+				WriteLine();
 
 				// データ数取得関数
 				WriteBlock("public static int GetCount()");
@@ -119,7 +89,86 @@ namespace Majiyaba
 
 			return builder.ToString();
 		}
-		
+
+		/// <summary>
+		/// データクラスの定義
+		/// コンストラクタとパラメータを用意
+		/// </summary>
+		private void WriteDataClassDefine()
+		{
+			WriteBlock($"public class Data");
+
+			// コンストラクタの宣言部分作成
+			var text = "";
+			foreach (var def in valueDefines)
+			{
+				if (text != "") text += ", ";
+				text += $"{ def.Type } { def.Name }";
+			}
+
+			// コンストラクタ作成
+			WriteBlock($"public Data({ text })");
+			foreach (var def in valueDefines)
+			{
+				WriteLine($"this.{ def.Name } = { def.Name };");
+			}
+			WriteBlockEnd();
+			WriteLine();
+
+			// パラメータ定義
+			foreach (var def in valueDefines)
+			{
+				WriteLine($"public { def.Type } { def.Name } {{ get; }}");
+			}
+			WriteBlockEnd();
+		}		
+
+		/// <summary>
+		/// データ配列作成
+		/// 静的変数の配列として定義する
+		/// </summary>
+		private void WriteDataArray()
+		{
+			// データを下から検索し末尾の空白を除外
+			int count = dataSources.Count;
+			while(count > 0)
+			{
+				var values = dataSources[count - 1];
+				bool hasValue = false;
+				foreach(var def in valueDefines )
+				{
+					if(values[def.Index] != "")
+					{
+						hasValue = true;
+						break;
+					}
+				}
+				if(hasValue)
+				{
+					// 一つでも値が入っていたら終了
+					break;
+				}
+				// 空っぽならカウントを下げて再開
+				count -= 1;
+			}
+
+			// データ配列作成
+			WriteBlock("private static readonly Data[] data = ");
+			for (var i = 0; i < count; i++)
+			{
+				var values = dataSources[i];
+				var text = "";
+				foreach (var def in valueDefines)
+				{
+					if (text != "") text += ", ";
+					text += def.ConvertValue(values[def.Index]);
+				}
+				WriteLine($"new Data({ text }),");
+			}
+			WriteBlockEnd(true);
+		}
+
+
 		/// <summary>
 		/// コードに一列を追加
 		/// 現在のブロックの状態を見てインデントも入れる
@@ -152,11 +201,10 @@ namespace Majiyaba
 		/// 開業後に1ライン空白行を加えることもできる
 		/// </summary>
 		/// <param name="addLine"></param>
-		private void WriteBlockEnd(bool addLine = false)
+		private void WriteBlockEnd(bool withSemicolon = false)
 		{
 			depth -= 1;
-			WriteLine("}");
-			if (addLine) WriteLine();
+			WriteLine(withSemicolon ? "};" : "}");
 		}
 
 		private string scriptName = null;

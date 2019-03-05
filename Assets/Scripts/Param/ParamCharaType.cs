@@ -16,6 +16,5 @@ namespace Majiyaba
 			Object = 2,
 			Fish = 3,
 		}
-		
 	}
 }

@@ -12,32 +12,12 @@ namespace Majiyaba
 	{
 		public ParamValueDefine(int index, string sourceName, string sourceType, string sourceInit)
 		{
-			this.index = index;
-			this.name = sourceName;
-			this.type = ConvertType(sourceType);
-			this.init = ConvertValue(sourceInit);
+			Index = index;
+			Name = sourceName;
+			Type = ConvertType(sourceType);
+			Init = ConvertValue(sourceInit);
 		}
-
-		public int GetIndex()
-		{
-			return index;
-		}
-
-		public string GenerateConstructorDefine()
-		{
-			return $"{ type } { name }";
-		}
-
-		public string GenerateSetValueDefine()
-		{
-			return $"this.{ name } = { name };";
-		}
-
-		public string GeneratePropatyDefine()
-		{
-			return $"public { type } { name } {{ get; }}";
-		}
-
+		
 		private string ConvertType(string type)
 		{
 			switch (type)
@@ -58,10 +38,10 @@ namespace Majiyaba
 		{
 			if (value == "")
 			{
-				return init;
+				return Init;
 			}
 
-			switch (type)
+			switch (Type)
 			{
 				case "int":
 				case "float":
@@ -76,13 +56,13 @@ namespace Majiyaba
 					return '"' + value + '"';
 
 				default:
-					return type + "." + value;
+					return Type + "." + value;
 			}
 		}
 
-		int index = 0;
-		string name = null;
-		string type = null;
-		string init = null;
+		public int Index { get; }
+		public string Name { get; }
+		public string Type { get; }
+		public string Init { get; }
 	}
 }
