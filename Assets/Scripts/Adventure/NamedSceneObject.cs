@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Majiyaba
 {
-	public class AdventureObject : MonoBehaviour
+	public class NamedSceneObject : MonoBehaviour
 	{
 		public string GetName()
 		{

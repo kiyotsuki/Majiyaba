@@ -66,21 +66,21 @@ namespace Majiyaba
 				WriteLine();
 
 				// データ取得関数
-				WriteBlock("public static Data GetData(int id)");
+				WriteBlock("public static Data Get(int id)");
 				WriteLine("if( id < 0 || data.Length <= id ) return null;");
 				WriteLine("return data[id];");
 				WriteBlockEnd();
 				WriteLine();
 
 				// IDでもアクセスできる版
-				WriteBlock("public static Data GetData(ID id)");
-				WriteLine("return GetData((int)id);");
+				WriteBlock("public static Data Get(ID id)");
+				WriteLine("return Get((int)id);");
 				WriteBlockEnd();
 				WriteLine();
 
-				// データ数取得関数
-				WriteBlock("public static int GetCount()");
-				WriteLine("return data.Length;");
+				// データ数取得パラメータ
+				WriteBlock("public static int Count");
+				WriteLine("get { return data.Length; }");
 				WriteBlockEnd();
 			}
 

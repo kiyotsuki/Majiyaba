@@ -13,38 +13,44 @@ namespace Majiyaba
 			Invalid = -1,
 			Title = 0,
 			Stage01 = 1,
+			Stage02 = 2,
+			Stage03 = 3,
 		}
 		
 		public class Data
 		{
-			public Data(string SceneName)
+			public Data(string SceneName, bool Playable)
 			{
 				this.SceneName = SceneName;
+				this.Playable = Playable;
 			}
 			
 			public string SceneName { get; }
+			public bool Playable { get; }
 		}
 		
 		private static readonly Data[] data = 
 		{
-			new Data("title"),
-			new Data("stage01"),
+			new Data("title", false),
+			new Data("stage01", true),
+			new Data("stage02", true),
+			new Data("stage03", true),
 		};
 		
-		public static Data GetData(int id)
+		public static Data Get(int id)
 		{
 			if( id < 0 || data.Length <= id ) return null;
 			return data[id];
 		}
 		
-		public static Data GetData(ID id)
+		public static Data Get(ID id)
 		{
-			return GetData((int)id);
+			return Get((int)id);
 		}
 		
-		public static int GetCount()
+		public static int Count
 		{
-			return data.Length;
+			get { return data.Length; }
 		}
 	}
 }

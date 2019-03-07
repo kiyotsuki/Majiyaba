@@ -37,6 +37,20 @@ namespace Majiyaba
 			generatorList.Add(generator);
 		}
 
+		public void DeleteActor(GameObject actor)
+		{
+			for (int i = 0; i < generatorList.Count; i++)
+			{
+				var generator = generatorList[i];
+				if(generator.GetActor() == actor)
+				{
+					generatorList.RemoveAt(i);
+					break;
+				}
+			}
+			GameObject.Destroy(actor);
+		}
+
 		class ActorGenerator
 		{
 			public ActorGenerator(ResourceRequest request, System.Action<GameObject> callback = null)
@@ -67,6 +81,11 @@ namespace Majiyaba
 					}
 				}
 				return false;
+			}
+
+			public GameObject GetActor()
+			{
+				return actor;
 			}
 
 			private ResourceRequest request = null;

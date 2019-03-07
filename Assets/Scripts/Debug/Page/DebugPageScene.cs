@@ -16,13 +16,16 @@ namespace Majiyaba
 		{
 			this.menu = menu;
 			
-			menu.AddButton("タイトル", () => ChangeScene("title"));
-			menu.AddButton("ステージ01", () => ChangeScene("stage01"));
+			for(int i=0; i<ParamScene.Count; i++)
+			{
+				var sceneId = (ParamScene.ID)i;
+				menu.AddButton(sceneId.ToString(), () => ChangeScene(sceneId));
+			}
 		}
 
-		private void ChangeScene(string sceneName)
+		private void ChangeScene(ParamScene.ID id)
 		{
-			GameUtil.RequestChangeScene(sceneName);
+			GameUtil.RequestChangeScene(id);
 			menu.Close();
 		}
 

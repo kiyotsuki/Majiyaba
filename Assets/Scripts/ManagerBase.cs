@@ -11,19 +11,19 @@ namespace Majiyaba
 			yield break;
 		}
 
-		public virtual IEnumerator OnBeginScene()
+		public virtual IEnumerator OnBeginScene(ParamScene.Data scene)
 		{
 			yield break;
 		}
 
-		public virtual void OnUpdateScene()
+		public virtual void OnUpdateScene(ParamScene.Data scene)
 		{
 
 		}
 
-		public virtual void OnTerminateScene()
+		public virtual void OnEndScene(ParamScene.Data next)
 		{
-			
+
 		}
 
 		public bool Ready { get; protected set; }

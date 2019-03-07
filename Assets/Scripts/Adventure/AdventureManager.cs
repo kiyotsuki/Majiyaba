@@ -13,11 +13,11 @@ namespace Majiyaba
 			yield break;
 		}
 
-		public override IEnumerator OnBeginScene()
+		public override IEnumerator OnBeginScene(ParamScene.Data scene)
 		{
 			Ready = false;
 
-			var objects = GameObject.FindObjectsOfType<AdventureObject>();
+			var objects = GameObject.FindObjectsOfType<NamedSceneObject>();
 			foreach(var obj in objects)
 			{
 				int key = obj.GetKey();
@@ -29,14 +29,21 @@ namespace Majiyaba
 				adventureObjects.Add(key, obj);
 			}
 
-			if (playerActor == null)
+			if (scene.Playable)
 			{
-				var actorManager = GameUtil.GetManager<ActorManager>();
-				actorManager.CreateActor("player", setupPlayer);
+				if (playerActor == null)
+				{
+					var actorManager = GameUtil.GetManager<ActorManager>();
+					actorManager.CreateActor("player", setupPlayer);
+				}
+				else
+				{
+					setupPlayer(playerActor);
+				}
 			}
 			else
 			{
-				setupPlayer(playerActor);
+				Ready = true;
 			}
 			yield break;
 		}
@@ -57,9 +64,9 @@ namespace Majiyaba
 		}
 
 
-		public override void OnUpdateScene()
+		public override void OnUpdateScene(ParamScene.Data scene)
 		{
-			if(playerActor == null)
+			if(scene.Playable == false)
 			{
 				return;
 			}
@@ -85,12 +92,18 @@ namespace Majiyaba
 		}
 
 
-		public override void OnTerminateScene()
+		public override void OnEndScene(ParamScene.Data next)
 		{
 			adventureObjects.Clear();
-			if (playerActor != null)
+
+			if (next.Playable == false)
 			{
-				playerActor.SetActive(false);
+				if (playerActor != null)
+				{
+					var actorManager = GameUtil.GetManager<ActorManager>();
+					actorManager.DeleteActor(playerActor);
+					playerActor = null;
+				}
 			}
 		}
 		
@@ -107,6 +120,6 @@ namespace Majiyaba
 
 		private GameObject playerActor = null;
 
-		private Dictionary<int, AdventureObject> adventureObjects = new Dictionary<int, AdventureObject>();
+		private Dictionary<int, NamedSceneObject> adventureObjects = new Dictionary<int, NamedSceneObject>();
 	}
 }

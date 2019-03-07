@@ -24,12 +24,12 @@ namespace Majiyaba
 		/// </summary>
 		/// <param name="sceneName"></param>
 		/// <returns></returns>
-		public static bool RequestChangeScene(string sceneName)
+		public static bool RequestChangeScene(ParamScene.ID id)
 		{
 			var main = GameMain.Instance;
 			if (main == null) return false;
 
-			return main.RequestChangeScene(sceneName);
+			return main.RequestChangeScene(id);
 		}
 	}
 }

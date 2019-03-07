@@ -84,19 +84,24 @@ namespace Majiyaba
 				return true;
 			});
 
-			activeScene = SceneManager.GetActiveScene();
+			var activeScene = SceneManager.GetActiveScene();
 			if(activeScene.name == "_main")
 			{
 				// タイトルへ遷移
-				RequestChangeScene("title");
+				RequestChangeScene(ParamScene.ID.Title);
 			}
 			else
 			{
-				foreach (var manager in managerList)
+				// 現在のシーン名からIDを検索
+				for (int i = 0; i < ParamScene.Count; i++)
 				{
-					StartCoroutine(manager.OnBeginScene());
+					var scene = ParamScene.Get(i);
+					if(scene.SceneName == activeScene.name)
+					{
+						nextScene = (ParamScene.ID) i;
+					}
 				}
-				sceneState = SceneState.Init;
+				sceneState = SceneState.Load;
 			}
 			
 			initialized = true;
@@ -136,12 +141,13 @@ namespace Majiyaba
 						// フェードアウトするまで待つ
 						if (fadeManager.IsCoverd())
 						{
+							var next = ParamScene.Get(nextScene);
 							foreach (var manager in managerList)
 							{
-								manager.OnTerminateScene();
+								manager.OnEndScene(next);
 							}
 
-							sceneLoadOperation = SceneManager.LoadSceneAsync(nextSceneName);
+							sceneLoadOperation = SceneManager.LoadSceneAsync(next.SceneName);
 							sceneState = SceneState.Load;
 						}
 					}
@@ -149,15 +155,17 @@ namespace Majiyaba
 
 				case SceneState.Load:
 					{
-						if(sceneLoadOperation.isDone)
+						if(sceneLoadOperation == null || sceneLoadOperation.isDone)
 						{
-							activeScene = SceneManager.GetActiveScene();
-							nextSceneName = null;
 							sceneLoadOperation = null;
-							
+
+							currentScene = nextScene;
+							nextScene = ParamScene.ID.Invalid;
+
+							var scene = ParamScene.Get(currentScene);
 							foreach (var manager in managerList)
 							{
-								StartCoroutine(manager.OnBeginScene());
+								StartCoroutine(manager.OnBeginScene(scene));
 							}
 							sceneState = SceneState.Init;
 						}
@@ -185,9 +193,10 @@ namespace Majiyaba
 
 				case SceneState.None:
 					{
+						var scene = ParamScene.Get(currentScene);
 						foreach (var manager in managerList)
 						{
-							manager.OnUpdateScene();
+							manager.OnUpdateScene(scene);
 						}
 					}
 					break;
@@ -199,14 +208,21 @@ namespace Majiyaba
 		/// フェードの管理もここで行う
 		/// </summary>
 		/// <param name="sceneName"></param>
-		public bool RequestChangeScene(string sceneName)
+		public bool RequestChangeScene(ParamScene.ID id)
 		{
-			if(sceneState != SceneState.None)
+			if(id == currentScene)
 			{
-				Debug.LogAssertion("シーン遷移中に別のシーンへ遷移しようとしました " + sceneName);
+				// 同じシーンへの遷移は無視
 				return false;
 			}
-			nextSceneName = sceneName;
+
+			if(sceneState != SceneState.None)
+			{
+				Debug.LogAssertion($"シーン遷移中に別のシーンへ遷移しようとしました ( Id={ id } )");
+				return false;
+			}
+
+			nextScene = id;
 			sceneState = SceneState.Request;
 
 			// フェード開始
@@ -222,10 +238,9 @@ namespace Majiyaba
 			Init,
 		}
 		private SceneState sceneState = SceneState.None;
-		private string nextSceneName = null;
 		private AsyncOperation sceneLoadOperation = null;
-
-		private Scene activeScene = new Scene();
+		private ParamScene.ID currentScene = ParamScene.ID.Invalid;
+		private ParamScene.ID nextScene = ParamScene.ID.Invalid;
 
 		private bool initialized = false;
 		private List<ManagerBase> managerList = new List<ManagerBase>();
