@@ -81,7 +81,7 @@ namespace Majiyaba
 				if (Physics.Raycast(ray, out hit, 100f, 1 << 9))
 				{
 					var move = playerActor.GetComponent<ActorMove>();
-					move.ReqestMove(hit.point);
+					move.RequestMove(hit.point);
 				}
 			}
 

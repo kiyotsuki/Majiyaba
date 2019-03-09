@@ -7,10 +7,24 @@ namespace Majiyaba
 {
 	public class ActorMove : MonoBehaviour
 	{
-		public void ReqestMove(Vector3 point)
+		public void RequestRotation()
+		{
+
+		}
+
+		public void RequestMove(Vector3 point)
 		{
 			requestMove = true;
 			targetPoint = point;
+
+			var diff = point - transform.position;
+			var rot = Mathf.Atan2(diff.x, diff.z) * Mathf.Rad2Deg;
+
+			targetRotation = Quaternion.Euler(0, rot, 0);
+			startRotation = transform.rotation;
+			rotateTimer = 0;
+
+			/*
 
 			var target = point - gameObject.transform.position;
 			target.y = 0;
@@ -26,29 +40,44 @@ namespace Majiyaba
 			if (cross.y < 0) angle *= -1;
 
 
+			
 
 			var rotation = gameObject.transform.rotation;
 			addAngle = angle + rotation.eulerAngles.y;
 
+			
+			Quaternion.Euler(0, 0, 0);
 
 			addAngle = Mathf.Atan2(target.x, target.z) ;
 
 			rotation.SetEulerAngles(0, addAngle, 0);
 
 			gameObject.transform.rotation = rotation;
+			*/
+
+			animator.Play("Waking@loop");
 		}
 
 		public void Start()
 		{
-			body = gameObject.GetComponent<Rigidbody>();
+			animator = GetComponent<Animator>();
+			body = GetComponent<Rigidbody>();
 		}
 
 		public void Update()
 		{
 			if(requestMove)
 			{
-				Vector3 pos = gameObject.transform.position;
+				if(rotateTimer < rotateSpeed)
+				{
+					rotateTimer += Time.deltaTime;
+					var rate = rotateTimer / rotateSpeed;
 
+					transform.rotation = Quaternion.Lerp(startRotation, targetRotation, rate);
+				}
+
+
+				Vector3 pos = gameObject.transform.position;
 				var dist = Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(targetPoint.x, targetPoint.z));
 				if(dist < moveSpeed * Time.deltaTime)
 				{
@@ -63,11 +92,15 @@ namespace Majiyaba
 			}
 		}
 
+		private Animator animator = null;
 		private Rigidbody body = null;
 
 		private bool requestMove = false;
+		
 		private Vector3 targetPoint;
-		private float addAngle = 0;
+
+		private Quaternion startRotation;
+		private Quaternion targetRotation;
 
 		private float rotateTimer = 0;
 
@@ -75,6 +108,6 @@ namespace Majiyaba
 		private float moveSpeed = 2;
 
 		[SerializeField]
-		private float rotateSpeed = 1;
+		private float rotateSpeed = 0.3f;
 	}
 }
