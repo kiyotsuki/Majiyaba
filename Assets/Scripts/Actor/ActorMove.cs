@@ -7,6 +7,11 @@ namespace Majiyaba
 {
 	public class ActorMove : MonoBehaviour
 	{
+		public bool IsReqestMove()
+		{
+			return requestMove;
+		}
+
 		public void RequestRotation()
 		{
 
@@ -22,40 +27,7 @@ namespace Majiyaba
 
 			targetRotation = Quaternion.Euler(0, rot, 0);
 			startRotation = transform.rotation;
-			rotateTimer = 0;
-
-			/*
-
-			var target = point - gameObject.transform.position;
-			target.y = 0;
-			target.Normalize();
-
-			var forward = gameObject.transform.forward;
-			forward.y = 0;
-			forward.Normalize();
-
-			var angle = Mathf.Acos( Vector3.Dot(forward, target));
-
-			var cross = Vector3.Cross(forward, target);
-			if (cross.y < 0) angle *= -1;
-
-
-			
-
-			var rotation = gameObject.transform.rotation;
-			addAngle = angle + rotation.eulerAngles.y;
-
-			
-			Quaternion.Euler(0, 0, 0);
-
-			addAngle = Mathf.Atan2(target.x, target.z) ;
-
-			rotation.SetEulerAngles(0, addAngle, 0);
-
-			gameObject.transform.rotation = rotation;
-			*/
-
-			animator.Play("Waking@loop");
+			rotateTimer = 0;			
 		}
 
 		public void Start()
@@ -66,6 +38,7 @@ namespace Majiyaba
 
 		public void Update()
 		{
+			float speed = 0;
 			if(requestMove)
 			{
 				if(rotateTimer < rotateSpeed)
@@ -87,8 +60,11 @@ namespace Majiyaba
 				{
 					var velocity = targetPoint - pos;
 					velocity = velocity.normalized * moveSpeed;
+					speed = moveSpeed;
 					body.velocity = velocity;
 				}
+
+				animator.SetFloat("MoveSpeed", speed);
 			}
 		}
 

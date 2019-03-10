@@ -30,9 +30,11 @@ namespace Majiyaba
 			Ready = allGererated;
 		}
 
-		public void CreateActor(string name, System.Action<GameObject> callback = null)
+		public void CreateActor(ParamActor.ID id, System.Action<GameObject> callback = null)
 		{
-			var req = Resources.LoadAsync<GameObject>("Actor/" + name);
+			var data = ParamActor.Get(id);
+			
+			var req = Resources.LoadAsync<GameObject>("Actors/" + data.Path);
 			var generator = new ActorGenerator(req, callback);
 			generatorList.Add(generator);
 		}

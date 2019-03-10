@@ -70,7 +70,9 @@ namespace Majiyaba
 
 			CreateManager<ActorManager>();
 			CreateManager<AdventureManager>();
+			CreateManager<EffectManager>();
 			CreateManager<DebugManager>();
+			
 
 			yield return new WaitUntil(() =>
 			{

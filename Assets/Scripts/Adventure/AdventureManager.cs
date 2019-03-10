@@ -34,7 +34,7 @@ namespace Majiyaba
 				if (playerActor == null)
 				{
 					var actorManager = GameUtil.GetManager<ActorManager>();
-					actorManager.CreateActor("player", setupPlayer);
+					actorManager.CreateActor(ParamActor.ID.Player, setupPlayer);
 				}
 				else
 				{
@@ -82,6 +82,25 @@ namespace Majiyaba
 				{
 					var move = playerActor.GetComponent<ActorMove>();
 					move.RequestMove(hit.point);
+
+					if (moveTargetEffect != null)
+					{
+						Destroy(moveTargetEffect);
+						moveTargetEffect = null;
+					}
+
+					moveTargetEffect = GameUtil.GetManager<EffectManager>().GenerateEffect(ParamEffect.ID.MoveTarget);
+					moveTargetEffect.transform.position = hit.point;
+				}
+			}
+
+			if(moveTargetEffect != null)
+			{
+				var move = playerActor.GetComponent<ActorMove>();
+				if(move.IsReqestMove() == false)
+				{
+					Destroy(moveTargetEffect);
+					moveTargetEffect = null;
 				}
 			}
 
@@ -119,6 +138,7 @@ namespace Majiyaba
 		}
 
 		private GameObject playerActor = null;
+		private GameObject moveTargetEffect = null;
 
 		private Dictionary<int, NamedSceneObject> adventureObjects = new Dictionary<int, NamedSceneObject>();
 	}

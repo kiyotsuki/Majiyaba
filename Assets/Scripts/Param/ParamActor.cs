@@ -11,26 +11,24 @@ namespace Majiyaba
 		public enum ID
 		{
 			Invalid = -1,
-			PlayerTest = 0,
-			Player = 1,
+			Player = 0,
 		}
 		
 		public class Data
 		{
-			public Data(string PrefabName, ParamActorType.ID Type)
+			public Data(string Path, ParamActorType.ID Type)
 			{
-				this.PrefabName = PrefabName;
+				this.Path = Path;
 				this.Type = Type;
 			}
 			
-			public string PrefabName { get; }
+			public string Path { get; }
 			public ParamActorType.ID Type { get; }
 		}
 		
 		private static readonly Data[] data = 
 		{
-			new Data("player_test", ParamActorType.ID.Object),
-			new Data("player", ParamActorType.ID.Human),
+			new Data("Misaki/misaki", ParamActorType.ID.Human),
 		};
 		
 		public static Data Get(int id)

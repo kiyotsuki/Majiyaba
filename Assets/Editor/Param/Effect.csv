@@ -1,0 +1,6 @@
+変数名,Path
+説明,エフェクトパス
+型,string
+初期値,null
+#,
+MoveTarget,move_target
