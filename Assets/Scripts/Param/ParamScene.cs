@@ -12,9 +12,9 @@ namespace Majiyaba
 		{
 			Invalid = -1,
 			Title = 0,
-			Stage01 = 1,
-			Stage02 = 2,
-			Stage03 = 3,
+			Test = 1,
+			Stage01 = 2,
+			Stage02 = 3,
 		}
 		
 		public class Data
@@ -32,9 +32,9 @@ namespace Majiyaba
 		private static readonly Data[] data = 
 		{
 			new Data("title", false),
+			new Data("test", true),
 			new Data("stage01", true),
 			new Data("stage02", true),
-			new Data("stage03", true),
 		};
 		
 		public static Data Get(int id)

@@ -8,7 +8,7 @@ namespace Majiyaba
 	{
 		public void OnStartButton()
 		{
-			GameMain.Instance.RequestChangeScene(ParamScene.ID.Stage01);
+			GameMain.Instance.RequestChangeScene(ParamScene.ID.Test);
 		}
 	}
 }
