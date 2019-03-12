@@ -81,7 +81,7 @@ namespace Majiyaba
 		private float rotateTimer = 0;
 
 		[SerializeField]
-		private float moveSpeed = 2;
+		private float moveSpeed = 4;
 
 		[SerializeField]
 		private float rotateSpeed = 0.3f;

@@ -105,8 +105,8 @@ namespace Majiyaba
 			}
 
 			var pos = playerActor.transform.position;
-			pos += Camera.main.transform.forward * -2;
-			pos.y += 0.5f;
+			pos += Camera.main.transform.forward * -cameraDistance;
+			pos.y += cameraHight;
 			Camera.main.transform.position = pos;
 		}
 
@@ -141,5 +141,11 @@ namespace Majiyaba
 		private GameObject moveTargetEffect = null;
 
 		private Dictionary<int, NamedSceneObject> adventureObjects = new Dictionary<int, NamedSceneObject>();
+
+		[SerializeField]
+		private float cameraDistance = 4.0f;
+
+		[SerializeField]
+		private float cameraHight = 0.7f;
 	}
 }
