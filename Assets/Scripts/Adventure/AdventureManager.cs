@@ -13,6 +13,25 @@ namespace Majiyaba
 			yield break;
 		}
 
+		public IEnumerator PlayerMove()
+		{
+			return new WaitUntil(() => { return false; });
+		}
+
+		public int Sele(string a, string b)
+		{
+			return 0;
+		}
+
+		public IEnumerator Script1()
+		{
+			var ret = Sele("a", "b");
+
+
+			yield break;
+		}
+
+
 		public override IEnumerator OnBeginScene(ParamScene.Data scene)
 		{
 			Ready = false;

@@ -57,6 +57,9 @@ namespace Majiyaba
 		/// <returns></returns>
 		private IEnumerator initializeGame()
 		{
+
+			CreateManager<GameResourceManager>();
+
 			fadeManager = CreateManager<FadeManager>();
 			
 			yield return new WaitUntil(() =>
@@ -71,6 +74,7 @@ namespace Majiyaba
 			CreateManager<ActorManager>();
 			CreateManager<AdventureManager>();
 			CreateManager<EffectManager>();
+			CreateManager<ScenarioManager>();
 			CreateManager<DebugManager>();
 			
 

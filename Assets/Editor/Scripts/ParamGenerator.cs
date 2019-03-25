@@ -13,7 +13,7 @@ namespace Majiyaba
 	/// </summary>
 	public class ParamGenerator
 	{
-		[MenuItem("Param/Generate")]
+		[MenuItem("Extend/ParamGenerate")]
 		public static void AllParamGenerate()
 		{
 			var generator = new ParamGenerator();
